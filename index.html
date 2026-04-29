@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>English Adventure 🌟</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FF7043">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="English">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--coral:#FF7043;--sun:#FFD54F;--grass:#66BB6A;--sky:#4FC3F7;--purple:#AB47BC;--mint:#26C6DA;--pink:#EC407A;--navy:#1A237E;--shadow:rgba(0,0,0,0.13);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(180deg,#B3E5FC 0%,#E3F2FD 55%,#C8E6C9 100%);min-height:100vh;color:var(--navy);}
+header{background:linear-gradient(135deg,#FF7043,#FFD54F);padding:14px 16px;text-align:center;box-shadow:0 4px 18px rgba(255,112,67,.4);}
+header h1{font-family:'Fredoka One',cursive;font-size:clamp(22px,5vw,44px);color:#fff;text-shadow:3px 3px 0 rgba(0,0,0,.18);letter-spacing:2px;}
+.subtitle{color:rgba(255,255,255,.9);font-size:12px;font-weight:600;margin-top:3px;}
+.score-bar{display:flex;justify-content:center;align-items:center;gap:12px;padding:8px 14px;background:rgba(255,255,255,.75);backdrop-filter:blur(8px);border-bottom:2px solid rgba(255,255,255,.8);flex-wrap:wrap;}
+.score-item{display:flex;align-items:center;gap:5px;font-weight:800;font-size:14px;}
+.tabs{display:flex;overflow-x:auto;gap:6px;padding:10px 12px;background:rgba(255,255,255,.5);border-bottom:3px solid rgba(255,255,255,.8);scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:8px 13px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.75);color:var(--navy);box-shadow:0 2px 7px var(--shadow);}
+.tab-btn.active{color:#fff;box-shadow:0 4px 14px var(--shadow);transform:translateY(-2px) scale(1.05);}
+.tab-btn:nth-child(1).active{background:linear-gradient(135deg,#FF7043,#FF8A65);}
+.tab-btn:nth-child(2).active{background:linear-gradient(135deg,#AB47BC,#CE93D8);}
+.tab-btn:nth-child(3).active{background:linear-gradient(135deg,#26C6DA,#80DEEA);}
+.tab-btn:nth-child(4).active{background:linear-gradient(135deg,#66BB6A,#A5D6A7);}
+.tab-btn:nth-child(5).active{background:linear-gradient(135deg,#EC407A,#F48FB1);}
+.tab-btn:nth-child(6).active{background:linear-gradient(135deg,#FFD54F,#FFF176);color:#333;}
+.tab-btn:nth-child(7).active{background:linear-gradient(135deg,#42A5F5,#90CAF9);}
+main{padding:14px 12px;max-width:720px;margin:0 auto;}
+.section{display:none;animation:fadeIn .3s ease;}
+.section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.section-title{font-family:'Fredoka One',cursive;font-size:22px;text-align:center;margin-bottom:14px;text-shadow:1px 1px 0 rgba(255,255,255,.8);}
+/* ALPHABET */
+.alpha-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px;}
+.lcard{background:#fff;border-radius:13px;padding:9px 5px 7px;text-align:center;cursor:pointer;box-shadow:0 3px 10px var(--shadow);transition:all .2s;border:3px solid transparent;user-select:none;}
+.lcard:hover{transform:scale(1.1) rotate(-3deg);}
+.lc-em{font-size:14px;}.lc-big{font-family:'Fredoka One',cursive;font-size:24px;line-height:1;}.lc-sm{font-size:10px;color:#666;font-weight:700;}.lc-wd{font-size:9px;color:#333;font-weight:800;margin-top:1px;}.lc-tr{font-size:8px;color:#aaa;font-style:italic;margin-top:1px;}.lc-ru{font-size:9px;color:var(--purple);font-weight:700;margin-top:1px;}
+/* PHONICS */
+.ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.phcard{background:#fff;border-radius:16px;padding:13px 10px;box-shadow:0 3px 12px var(--shadow);cursor:pointer;transition:all .2s;text-align:center;}
+.phcard:hover{transform:translateY(-4px);box-shadow:0 8px 22px var(--shadow);}
+.ph-em{font-size:24px;margin-bottom:3px;}.ph-lb{font-family:'Fredoka One',cursive;font-size:24px;}.ph-ipa{font-size:11px;font-weight:800;margin-top:2px;}.ph-ex{font-size:10px;color:#555;font-weight:600;margin-top:3px;}.ph-ru{font-size:10px;color:var(--purple);font-weight:700;margin-top:2px;}
+/* VOCAB */
+.vcats{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;justify-content:center;}
+.cbt{padding:6px 12px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:700;font-size:11px;cursor:pointer;background:#fff;color:var(--navy);box-shadow:0 2px 7px var(--shadow);transition:all .2s;}
+.cbt.active{background:var(--purple);color:#fff;transform:scale(1.05);}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:9px;}
+.vcard{background:#fff;border-radius:14px;padding:11px 7px;text-align:center;box-shadow:0 3px 12px var(--shadow);cursor:pointer;transition:all .2s;border:3px solid transparent;}
+.vcard:hover{transform:translateY(-3px);border-color:var(--purple);}
+.vc-em{font-size:30px;}.vc-en{font-weight:800;font-size:12px;color:var(--navy);margin-top:4px;}.vc-tr{font-size:9px;color:#aaa;font-style:italic;margin-top:2px;}.vc-ru{font-size:10px;color:var(--purple);font-weight:700;margin-top:2px;}
+/* READING */
+.story-sel{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.sbtn{background:#fff;border:none;border-radius:13px;padding:12px 15px;text-align:left;cursor:pointer;box-shadow:0 2px 9px var(--shadow);font-family:'Nunito',sans-serif;font-weight:700;display:flex;align-items:center;gap:10px;transition:all .2s;}
+.sbtn:hover{transform:translateX(5px);background:#EDE7F6;}
+.si{font-size:24px;}.sn{font-size:14px;color:var(--navy);}.sl{font-size:10px;color:#888;}
+.story-box{background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 18px var(--shadow);line-height:2.1;font-size:15px;}
+.story-ttl{font-family:'Fredoka One',cursive;font-size:19px;color:var(--coral);margin-bottom:11px;text-align:center;}
+.sw{cursor:pointer;border-bottom:2px dotted var(--purple);transition:background .2s;border-radius:4px;padding:0 2px;}
+.sw:hover{background:#EDE7F6;}
+.wtip{display:inline-block;background:var(--purple);color:#fff;font-size:10px;padding:1px 6px;border-radius:20px;font-weight:700;margin-left:2px;vertical-align:middle;animation:pop .2s;}
+.wtr{display:inline-block;background:#42A5F5;color:#fff;font-size:9px;padding:1px 5px;border-radius:20px;font-weight:600;margin-left:2px;vertical-align:middle;font-style:italic;}
+.back-btn{margin-top:11px;background:var(--coral);color:#fff;border:none;border-radius:50px;padding:9px 20px;font-family:'Nunito',sans-serif;font-weight:800;cursor:pointer;font-size:13px;transition:all .2s;}
+.back-btn:hover{transform:scale(1.05);}
+/* GRAMMAR */
+.gtopics{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;}
+.gtbtn{background:#fff;border:none;border-radius:13px;padding:12px 15px;text-align:left;cursor:pointer;box-shadow:0 2px 9px var(--shadow);font-family:'Nunito',sans-serif;font-weight:700;display:flex;align-items:center;gap:10px;transition:all .2s;}
+.gtbtn:hover{transform:translateX(5px);}
+.gi{font-size:22px;}.gt{font-size:14px;color:var(--navy);}.gs{font-size:10px;color:#888;}
+.glesson{background:#fff;border-radius:16px;padding:16px;box-shadow:0 4px 18px var(--shadow);}
+.glesson h3{font-family:'Fredoka One',cursive;font-size:18px;color:var(--mint);margin-bottom:11px;text-align:center;}
+.rbox{border-radius:11px;padding:12px;margin-bottom:11px;border-left:5px solid var(--sky);}
+.rtitle{font-weight:800;color:var(--navy);margin-bottom:4px;font-size:13px;}
+.rtext{font-size:12px;color:#444;line-height:1.7;}
+.exgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+.exitem{background:#fff;border-radius:9px;padding:8px;box-shadow:0 2px 7px var(--shadow);font-size:11px;}
+.exitem .en{font-weight:800;color:var(--coral);}.exitem .ru{color:#666;font-size:10px;}
+/* QUIZ */
+.qbox{background:#fff;border-radius:16px;padding:18px;box-shadow:0 4px 18px var(--shadow);text-align:center;}
+.qplab{font-size:11px;color:#888;font-weight:700;margin-bottom:7px;}
+.qpbar{background:#EEE;border-radius:50px;height:7px;margin-bottom:12px;overflow:hidden;}
+.qpfill{height:100%;background:linear-gradient(90deg,var(--coral),var(--sun));border-radius:50px;transition:width .4s;}
+.qem{font-size:46px;margin-bottom:8px;}.qq{font-size:16px;font-weight:800;color:var(--navy);margin-bottom:4px;}.qhint{font-size:11px;color:#888;margin-bottom:14px;}
+.qopts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.qopt{background:#F5F5F5;border:3px solid transparent;border-radius:11px;padding:11px 8px;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:all .2s;}
+.qopt:hover{background:#EDE7F6;border-color:var(--purple);transform:scale(1.03);}
+.qopt.correct{background:#C8E6C9;border-color:var(--grass);color:#1B5E20;}
+.qopt.wrong{background:#FFCDD2;border-color:#E57373;color:#B71C1C;}
+.qfb{margin-top:11px;padding:10px;border-radius:11px;font-weight:800;font-size:14px;animation:pop .3s;}
+.qfb.good{background:#C8E6C9;color:#1B5E20;}.qfb.bad{background:#FFCDD2;color:#B71C1C;}
+.qnext{margin-top:9px;background:linear-gradient(135deg,var(--coral),var(--sun));color:#fff;border:none;border-radius:50px;padding:10px 24px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .2s;}
+.qnext:hover{transform:scale(1.05);}
+.qres{text-align:center;padding:16px;}
+.qres .re{font-size:56px;}.qres h3{font-family:'Fredoka One',cursive;font-size:24px;color:var(--coral);margin:8px 0;}.qres p{font-size:14px;color:#555;margin-bottom:11px;}
+.rbtn{background:linear-gradient(135deg,var(--purple),var(--mint));color:#fff;border:none;border-radius:50px;padding:10px 24px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .2s;}
+.rbtn:hover{transform:scale(1.05);}
+.qtypebar{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:14px;}
+.qtbtn{padding:7px 13px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:700;font-size:11px;cursor:pointer;background:#fff;color:var(--navy);box-shadow:0 2px 7px var(--shadow);transition:all .2s;}
+.qtbtn.active{background:var(--pink);color:#fff;transform:scale(1.05);}
+/* AI */
+.ai-wrap{display:flex;flex-direction:column;height:calc(100vh - 270px);min-height:340px;}
+.ai-topbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;justify-content:center;}
+.aitbtn{padding:6px 12px;border:none;border-radius:50px;font-family:'Nunito',sans-serif;font-weight:700;font-size:11px;cursor:pointer;background:#fff;color:var(--navy);box-shadow:0 2px 7px var(--shadow);transition:all .2s;}
+.aitbtn:hover{background:#E3F2FD;transform:scale(1.04);}
+.ai-msgs{flex:1;overflow-y:auto;background:rgba(255,255,255,.65);backdrop-filter:blur(6px);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:9px;margin-bottom:9px;box-shadow:0 2px 12px var(--shadow);}
+.amsg{max-width:86%;padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.6;animation:fadeIn .3s;}
+.amsg.bot{background:linear-gradient(135deg,#E8EAF6,#EDE7F6);color:var(--navy);align-self:flex-start;border-bottom-left-radius:3px;}
+.amsg.user{background:linear-gradient(135deg,var(--coral),#FF8A65);color:#fff;align-self:flex-end;border-bottom-right-radius:3px;}
+.amsg.loading{background:#EEE;color:#888;align-self:flex-start;}
+.ai-inrow{display:flex;gap:7px;}
+.ai-inp{flex:1;padding:10px 14px;border:3px solid rgba(171,71,188,.3);border-radius:50px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;transition:border .2s;}
+.ai-inp:focus{border-color:var(--purple);}
+.ai-sbtn{background:linear-gradient(135deg,var(--purple),var(--mint));color:#fff;border:none;border-radius:50px;padding:10px 18px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.ai-sbtn:hover{transform:scale(1.05);}.ai-sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+.masc{font-size:24px;margin-right:6px;vertical-align:middle;}
+/* MISC */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:linear-gradient(135deg,#333,#555);color:#fff;padding:10px 20px;border-radius:50px;font-weight:800;font-size:13px;z-index:1000;transition:transform .3s;box-shadow:0 8px 22px rgba(0,0,0,.3);}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.starburst{position:fixed;pointer-events:none;z-index:999;font-size:24px;animation:burst .8s forwards;}
+@keyframes burst{0%{opacity:1;transform:scale(0) translateY(0);}50%{opacity:1;transform:scale(1.4) translateY(-40px);}100%{opacity:0;transform:scale(.8) translateY(-80px);}}
+@keyframes pop{from{transform:scale(0);}to{transform:scale(1);}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🌍 English Adventure</h1>
+  <div class="subtitle">Учи английский — это весело! 🎉 Для детей 8–10 лет</div>
+</header>
+<div class="score-bar">
+  <div class="score-item">⭐ <span id="stars">0</span> звёзд</div>
+  <div class="score-item">🏆 Ур. <span id="level">1</span></div>
+  <div class="score-item">🔥 Серия: <span id="streak">0</span></div>
+  <div class="score-item">✅ <span id="correct">0</span> верно</div>
+</div>
+<div class="tabs">
+  <button class="tab-btn active" onclick="showSection('alphabet')">🔤 Буквы</button>
+  <button class="tab-btn" onclick="showSection('phonics')">🔊 Звуки</button>
+  <button class="tab-btn" onclick="showSection('vocab')">📚 Слова</button>
+  <button class="tab-btn" onclick="showSection('reading')">📖 Чтение</button>
+  <button class="tab-btn" onclick="showSection('grammar')">✏️ Грамматика</button>
+  <button class="tab-btn" onclick="showSection('quiz')">🎯 Квиз</button>
+  <button class="tab-btn" onclick="showSection('ai')">🤖 ИИ-учитель</button>
+</div>
+<main>
+<div class="section active" id="section-alphabet">
+  <div class="section-title" style="color:var(--coral)">🔤 Английский алфавит</div>
+  <div class="alpha-grid" id="alpha-grid"></div>
+</div>
+<div class="section" id="section-phonics">
+  <div class="section-title" style="color:var(--purple)">🔊 Звуки и буквосочетания</div>
+  <p style="text-align:center;font-size:11px;color:#666;margin-bottom:11px;font-weight:600;">Нажимай — услышишь произношение!</p>
+  <div class="ph-grid" id="ph-grid"></div>
+</div>
+<div class="section" id="section-vocab">
+  <div class="section-title" style="color:var(--purple)">📚 Слова по темам</div>
+  <div class="vcats" id="vcats"></div>
+  <div class="vgrid" id="vgrid"></div>
+</div>
+<div class="section" id="section-reading">
+  <div class="section-title" style="color:var(--mint)">📖 Тексты для чтения</div>
+  <div id="story-list">
+    <p style="text-align:center;font-size:11px;color:#666;margin-bottom:11px;font-weight:600;">Нажимай на слово → транскрипция + перевод!</p>
+    <div class="story-sel" id="story-sel"></div>
+  </div>
+  <div id="story-content" style="display:none;"></div>
+</div>
+<div class="section" id="section-grammar">
+  <div class="section-title" style="color:var(--grass)">✏️ Грамматика</div>
+  <div id="grammar-list"><div class="gtopics" id="gtopics"></div></div>
+  <div id="grammar-content" style="display:none;"></div>
+</div>
+<div class="section" id="section-quiz">
+  <div class="section-title" style="color:var(--pink)">🎯 Проверь себя!</div>
+  <div class="qtypebar" id="qtypebar"></div>
+  <div id="quiz-box"></div>
+</div>
+<div class="section" id="section-ai">
+  <div class="section-title" style="color:#42A5F5">🤖 ИИ-учитель Оливер</div>
+  <div class="ai-wrap">
+    <div class="ai-topbar" id="ai-topbar"></div>
+    <div class="ai-msgs" id="ai-msgs">
+      <div class="amsg bot"><span class="masc">🦉</span><b>Привет! Я Оливер — твой учитель английского!</b><br><br>Я объясню слова, расскажу правила грамматики, придумаю упражнения и отвечу на вопросы. Пиши на <b>русском или английском</b>!<br><br>Или нажми кнопку выше 👆</div>
+    </div>
+    <div class="ai-inrow">
+      <input class="ai-inp" id="ai-inp" placeholder="Напиши вопрос или слово…" onkeydown="if(event.key==='Enter')sendAI()">
+      <button class="ai-sbtn" id="ai-sbtn" onclick="sendAI()">➤ Спросить</button>
+    </div>
+  </div>
+</div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const CLR=['#FF7043','#AB47BC','#26C6DA','#66BB6A','#EC407A','#FFD54F','#42A5F5','#26A69A','#F4511E','#7B1FA2'];
+
+const ALPHA=[
+  {l:'A',s:'a',w:'Apple',e:'🍎',tr:'[ˈæpl]',ru:'яблоко'},
+  {l:'B',s:'b',w:'Ball',e:'⚽',tr:'[bɔːl]',ru:'мяч'},
+  {l:'C',s:'c',w:'Cat',e:'🐱',tr:'[kæt]',ru:'кошка'},
+  {l:'D',s:'d',w:'Dog',e:'🐶',tr:'[dɒɡ]',ru:'собака'},
+  {l:'E',s:'e',w:'Egg',e:'🥚',tr:'[eɡ]',ru:'яйцо'},
+  {l:'F',s:'f',w:'Fish',e:'🐟',tr:'[fɪʃ]',ru:'рыба'},
+  {l:'G',s:'g',w:'Girl',e:'👧',tr:'[ɡɜːl]',ru:'девочка'},
+  {l:'H',s:'h',w:'Hat',e:'🎩',tr:'[hæt]',ru:'шляпа'},
+  {l:'I',s:'i',w:'Ice',e:'🧊',tr:'[aɪs]',ru:'лёд'},
+  {l:'J',s:'j',w:'Juice',e:'🧃',tr:'[dʒuːs]',ru:'сок'},
+  {l:'K',s:'k',w:'King',e:'👑',tr:'[kɪŋ]',ru:'король'},
+  {l:'L',s:'l',w:'Lion',e:'🦁',tr:'[ˈlaɪən]',ru:'лев'},
+  {l:'M',s:'m',w:'Moon',e:'🌙',tr:'[muːn]',ru:'луна'},
+  {l:'N',s:'n',w:'Nose',e:'👃',tr:'[nəʊz]',ru:'нос'},
+  {l:'O',s:'o',w:'Orange',e:'🍊',tr:'[ˈɒrɪndʒ]',ru:'апельсин'},
+  {l:'P',s:'p',w:'Pizza',e:'🍕',tr:'[ˈpiːtsə]',ru:'пицца'},
+  {l:'Q',s:'q',w:'Queen',e:'👸',tr:'[kwiːn]',ru:'королева'},
+  {l:'R',s:'r',w:'Rain',e:'🌧',tr:'[reɪn]',ru:'дождь'},
+  {l:'S',s:'s',w:'Sun',e:'☀️',tr:'[sʌn]',ru:'солнце'},
+  {l:'T',s:'t',w:'Tree',e:'🌳',tr:'[triː]',ru:'дерево'},
+  {l:'U',s:'u',w:'Umbrella',e:'☂️',tr:'[ʌmˈbrelə]',ru:'зонт'},
+  {l:'V',s:'v',w:'Van',e:'🚌',tr:'[væn]',ru:'фургон'},
+  {l:'W',s:'w',w:'Water',e:'💧',tr:'[ˈwɔːtər]',ru:'вода'},
+  {l:'X',s:'x',w:'X-ray',e:'🩻',tr:'[ˈeksreɪ]',ru:'рентген'},
+  {l:'Y',s:'y',w:'Yellow',e:'💛',tr:'[ˈjeləʊ]',ru:'жёлтый'},
+  {l:'Z',s:'z',w:'Zoo',e:'🦓',tr:'[zuː]',ru:'зоопарк'},
+];
+
+const PHONICS=[
+  {sound:'sh',emoji:'🤫',ex:'ship, fish, she',ru:'[ʃ] — как «ш»',exRu:'корабль, рыба, она'},
+  {sound:'ch',emoji:'🚂',ex:'chair, cheese, much',ru:'[tʃ] — как «ч»',exRu:'стул, сыр, много'},
+  {sound:'th',emoji:'🦷',ex:'this, that, think',ru:'[θ/ð] — язык между зубами',exRu:'это, тот, думать'},
+  {sound:'wh',emoji:'❓',ex:'what, where, when',ru:'[w] — как «в»',exRu:'что, где, когда'},
+  {sound:'ck',emoji:'🦆',ex:'duck, black, clock',ru:'[k] — как «к»',exRu:'утка, чёрный, часы'},
+  {sound:'ee',emoji:'👀',ex:'see, tree, green',ru:'[iː] — долгое «и»',exRu:'видеть, дерево, зелёный'},
+  {sound:'oo',emoji:'🌙',ex:'book, moon, food',ru:'[ʊ/uː] — как «у»',exRu:'книга, луна, еда'},
+  {sound:'ai',emoji:'🌧',ex:'rain, train, tail',ru:'[eɪ] — как «эй»',exRu:'дождь, поезд, хвост'},
+  {sound:'ou',emoji:'🏠',ex:'out, house, mouse',ru:'[aʊ] — как «ау»',exRu:'снаружи, дом, мышь'},
+  {sound:'oa',emoji:'⛵',ex:'boat, coat, road',ru:'[əʊ] — как «оу»',exRu:'лодка, пальто, дорога'},
+  {sound:'ing',emoji:'🎵',ex:'singing, running, going',ru:'[ɪŋ] — окончание -инг',exRu:'петь, бежать, идти'},
+  {sound:'er/or',emoji:'🐦',ex:'bird, word, doctor',ru:'[ɜː/ɔː] — «ёр/ор»',exRu:'птица, слово, доктор'},
+];
+
+const VOCAB={
+  '🍎 Еда':[
+    {e:'🍎',en:'apple',ru:'яблоко',tr:'[ˈæpl]'},{e:'🍌',en:'banana',ru:'банан',tr:'[bəˈnɑːnə]'},
+    {e:'🍕',en:'pizza',ru:'пицца',tr:'[ˈpiːtsə]'},{e:'🥛',en:'milk',ru:'молоко',tr:'[mɪlk]'},
+    {e:'🍞',en:'bread',ru:'хлеб',tr:'[bred]'},{e:'🥕',en:'carrot',ru:'морковь',tr:'[ˈkærət]'},
+    {e:'🍪',en:'cookie',ru:'печенье',tr:'[ˈkʊki]'},{e:'🍦',en:'ice cream',ru:'мороженое',tr:'[ˈaɪs kriːm]'},
+    {e:'🍓',en:'strawberry',ru:'клубника',tr:'[ˈstrɔːbəri]'},{e:'🧀',en:'cheese',ru:'сыр',tr:'[tʃiːz]'},
+    {e:'🥚',en:'egg',ru:'яйцо',tr:'[eɡ]'},{e:'🍰',en:'cake',ru:'торт',tr:'[keɪk]'},
+  ],
+  '🐾 Животные':[
+    {e:'🐶',en:'dog',ru:'собака',tr:'[dɒɡ]'},{e:'🐱',en:'cat',ru:'кошка',tr:'[kæt]'},
+    {e:'🐘',en:'elephant',ru:'слон',tr:'[ˈelɪfənt]'},{e:'🦁',en:'lion',ru:'лев',tr:'[ˈlaɪən]'},
+    {e:'🐸',en:'frog',ru:'лягушка',tr:'[frɒɡ]'},{e:'🐧',en:'penguin',ru:'пингвин',tr:'[ˈpeŋɡwɪn]'},
+    {e:'🦊',en:'fox',ru:'лиса',tr:'[fɒks]'},{e:'🐻',en:'bear',ru:'медведь',tr:'[beər]'},
+    {e:'🦋',en:'butterfly',ru:'бабочка',tr:'[ˈbʌtəflaɪ]'},{e:'🐬',en:'dolphin',ru:'дельфин',tr:'[ˈdɒlfɪn]'},
+    {e:'🦒',en:'giraffe',ru:'жираф',tr:'[dʒɪˈrɑːf]'},{e:'🐢',en:'turtle',ru:'черепаха',tr:'[ˈtɜːtl]'},
+  ],
+  '🌈 Цвета':[
+    {e:'❤️',en:'red',ru:'красный',tr:'[red]'},{e:'💛',en:'yellow',ru:'жёлтый',tr:'[ˈjeləʊ]'},
+    {e:'💙',en:'blue',ru:'синий',tr:'[bluː]'},{e:'💚',en:'green',ru:'зелёный',tr:'[ɡriːn]'},
+    {e:'🟠',en:'orange',ru:'оранжевый',tr:'[ˈɒrɪndʒ]'},{e:'🟣',en:'purple',ru:'фиолетовый',tr:'[ˈpɜːpl]'},
+    {e:'⬛',en:'black',ru:'чёрный',tr:'[blæk]'},{e:'⬜',en:'white',ru:'белый',tr:'[waɪt]'},
+    {e:'🩷',en:'pink',ru:'розовый',tr:'[pɪŋk]'},{e:'🟤',en:'brown',ru:'коричневый',tr:'[braʊn]'},
+    {e:'🩶',en:'grey',ru:'серый',tr:'[ɡreɪ]'},{e:'🔵',en:'light blue',ru:'голубой',tr:'[laɪt bluː]'},
+  ],
+  '🔢 Числа':[
+    {e:'1️⃣',en:'one',ru:'один',tr:'[wʌn]'},{e:'2️⃣',en:'two',ru:'два',tr:'[tuː]'},
+    {e:'3️⃣',en:'three',ru:'три',tr:'[θriː]'},{e:'4️⃣',en:'four',ru:'четыре',tr:'[fɔːr]'},
+    {e:'5️⃣',en:'five',ru:'пять',tr:'[faɪv]'},{e:'6️⃣',en:'six',ru:'шесть',tr:'[sɪks]'},
+    {e:'7️⃣',en:'seven',ru:'семь',tr:'[ˈsevən]'},{e:'8️⃣',en:'eight',ru:'восемь',tr:'[eɪt]'},
+    {e:'9️⃣',en:'nine',ru:'девять',tr:'[naɪn]'},{e:'🔟',en:'ten',ru:'десять',tr:'[ten]'},
+    {e:'2️⃣0️⃣',en:'twenty',ru:'двадцать',tr:'[ˈtwenti]'},{e:'💯',en:'hundred',ru:'сто',tr:'[ˈhʌndrəd]'},
+  ],
+  '📅 Дни/месяцы':[
+    {e:'☀️',en:'Monday',ru:'понедельник',tr:'[ˈmʌndeɪ]'},{e:'🌤',en:'Tuesday',ru:'вторник',tr:'[ˈtjuːzdeɪ]'},
+    {e:'🌥',en:'Wednesday',ru:'среда',tr:'[ˈwenzdeɪ]'},{e:'⛅',en:'Thursday',ru:'четверг',tr:'[ˈθɜːzdeɪ]'},
+    {e:'🌦',en:'Friday',ru:'пятница',tr:'[ˈfraɪdeɪ]'},{e:'🎉',en:'Saturday',ru:'суббота',tr:'[ˈsætədeɪ]'},
+    {e:'😴',en:'Sunday',ru:'воскресенье',tr:'[ˈsʌndeɪ]'},{e:'❄️',en:'January',ru:'январь',tr:'[ˈdʒænjuəri]'},
+    {e:'🌱',en:'March',ru:'март',tr:'[mɑːtʃ]'},{e:'🌸',en:'April',ru:'апрель',tr:'[ˈeɪprəl]'},
+    {e:'☀️',en:'June',ru:'июнь',tr:'[dʒuːn]'},{e:'🍂',en:'October',ru:'октябрь',tr:'[ɒkˈtəʊbər]'},
+  ],
+  '👕 Одежда':[
+    {e:'👕',en:'t-shirt',ru:'футболка',tr:'[ˈtiːʃɜːt]'},{e:'👖',en:'jeans',ru:'джинсы',tr:'[dʒiːnz]'},
+    {e:'👗',en:'dress',ru:'платье',tr:'[dres]'},{e:'🧥',en:'coat',ru:'пальто',tr:'[kəʊt]'},
+    {e:'👟',en:'trainers',ru:'кроссовки',tr:'[ˈtreɪnərz]'},{e:'🧢',en:'cap',ru:'кепка',tr:'[kæp]'},
+    {e:'🧣',en:'scarf',ru:'шарф',tr:'[skɑːf]'},{e:'🧤',en:'gloves',ru:'перчатки',tr:'[ɡlʌvz]'},
+    {e:'👠',en:'shoes',ru:'туфли',tr:'[ʃuːz]'},{e:'🧦',en:'socks',ru:'носки',tr:'[sɒks]'},
+    {e:'👒',en:'hat',ru:'шляпа',tr:'[hæt]'},{e:'🩳',en:'shorts',ru:'шорты',tr:'[ʃɔːts]'},
+  ],
+  '🏫 Школа':[
+    {e:'📚',en:'book',ru:'книга',tr:'[bʊk]'},{e:'✏️',en:'pencil',ru:'карандаш',tr:'[ˈpensəl]'},
+    {e:'📐',en:'ruler',ru:'линейка',tr:'[ˈruːlər]'},{e:'🖊',en:'pen',ru:'ручка',tr:'[pen]'},
+    {e:'🎒',en:'schoolbag',ru:'рюкзак',tr:'[ˈskuːlbæɡ]'},{e:'📓',en:'notebook',ru:'тетрадь',tr:'[ˈnəʊtbʊk]'},
+    {e:'🖥',en:'computer',ru:'компьютер',tr:'[kəmˈpjuːtər]'},{e:'🗑',en:'rubber',ru:'ластик',tr:'[ˈrʌbər]'},
+    {e:'🏫',en:'school',ru:'школа',tr:'[skuːl]'},{e:'👩‍🏫',en:'teacher',ru:'учитель',tr:'[ˈtiːtʃər]'},
+    {e:'🎓',en:'student',ru:'ученик',tr:'[ˈstjuːdənt]'},{e:'📏',en:'scissors',ru:'ножницы',tr:'[ˈsɪzərz]'},
+  ],
+  '💪 Глаголы':[
+    {e:'🏃',en:'run',ru:'бежать',tr:'[rʌn]'},{e:'🚶',en:'walk',ru:'идти',tr:'[wɔːk]'},
+    {e:'🍽',en:'eat',ru:'есть/кушать',tr:'[iːt]'},{e:'🥤',en:'drink',ru:'пить',tr:'[drɪŋk]'},
+    {e:'😴',en:'sleep',ru:'спать',tr:'[sliːp]'},{e:'📖',en:'read',ru:'читать',tr:'[riːd]'},
+    {e:'✍️',en:'write',ru:'писать',tr:'[raɪt]'},{e:'🎮',en:'play',ru:'играть',tr:'[pleɪ]'},
+    {e:'💬',en:'speak',ru:'говорить',tr:'[spiːk]'},{e:'👂',en:'listen',ru:'слушать',tr:'[ˈlɪsən]'},
+    {e:'👀',en:'look',ru:'смотреть',tr:'[lʊk]'},{e:'❤️',en:'love',ru:'любить',tr:'[lʌv]'},
+  ],
+};
+
+const STORIES=[
+  {icon:'🐕',name:'My Dog Max',level:'Уровень 1 — Начинающий',title:'My Dog Max',
+   text:[{w:'I',t:'Я',tr:'[aɪ]'},{w:' '},{w:'have',t:'имею',tr:'[hæv]'},{w:' '},{w:'a',t:'артикль a',tr:'[ə]'},{w:' '},{w:'dog',t:'собака',tr:'[dɒɡ]'},{w:'. '},{w:'His',t:'его',tr:'[hɪz]'},{w:' '},{w:'name',t:'имя',tr:'[neɪm]'},{w:' '},{w:'is',t:'является',tr:'[ɪz]'},{w:' '},{w:'Max',t:'Макс (имя)',tr:'[mæks]'},{w:'. '},{w:'Max',t:'Макс',tr:'[mæks]'},{w:' '},{w:'is',t:'является',tr:'[ɪz]'},{w:' '},{w:'big',t:'большой',tr:'[bɪɡ]'},{w:' '},{w:'and',t:'и',tr:'[ænd]'},{w:' '},{w:'white',t:'белый',tr:'[waɪt]'},{w:'. '},{w:'He',t:'он',tr:'[hiː]'},{w:' '},{w:'likes',t:'любит',tr:'[laɪks]'},{w:' '},{w:'to',t:'инфинитив',tr:'[tuː]'},{w:' '},{w:'run',t:'бегать',tr:'[rʌn]'},{w:'. '},{w:'Every',t:'каждое',tr:'[ˈevri]'},{w:' '},{w:'morning',t:'утро',tr:'[ˈmɔːnɪŋ]'},{w:' '},{w:'we',t:'мы',tr:'[wiː]'},{w:' '},{w:'go',t:'идём',tr:'[ɡəʊ]'},{w:' '},{w:'to',t:'в',tr:'[tə]'},{w:' '},{w:'the',t:'артикль the',tr:'[ðə]'},{w:' '},{w:'park',t:'парк',tr:'[pɑːk]'},{w:'. '},{w:'Max',t:'Макс',tr:'[mæks]'},{w:' '},{w:'loves',t:'любит',tr:'[lʌvz]'},{w:' '},{w:'me',t:'меня',tr:'[miː]'},{w:' '},{w:'and',t:'и',tr:'[ænd]'},{w:' '},{w:'I',t:'я',tr:'[aɪ]'},{w:' '},{w:'love',t:'люблю',tr:'[lʌv]'},{w:' '},{w:'Max',t:'Макс',tr:'[mæks]'},{w:'!'}]},
+  {icon:'🌳',name:'The Big Tree',level:'Уровень 2 — Базовый',title:'The Big Tree',
+   text:[{w:'There',t:'там / есть',tr:'[ðeər]'},{w:' '},{w:'is',t:'есть',tr:'[ɪz]'},{w:' '},{w:'a',t:'артикль a',tr:'[ə]'},{w:' '},{w:'big',t:'большое',tr:'[bɪɡ]'},{w:' '},{w:'tree',t:'дерево',tr:'[triː]'},{w:' '},{w:'in',t:'в',tr:'[ɪn]'},{w:' '},{w:'our',t:'нашем',tr:'[aʊər]'},{w:' '},{w:'garden',t:'саду',tr:'[ˈɡɑːdən]'},{w:'. '},{w:'The',t:'артикль the',tr:'[ðə]'},{w:' '},{w:'tree',t:'дерево',tr:'[triː]'},{w:' '},{w:'is',t:'является',tr:'[ɪz]'},{w:' '},{w:'very',t:'очень',tr:'[ˈveri]'},{w:' '},{w:'old',t:'старым',tr:'[əʊld]'},{w:'. '},{w:'Birds',t:'птицы',tr:'[bɜːdz]'},{w:' '},{w:'live',t:'живут',tr:'[lɪv]'},{w:' '},{w:'in',t:'в',tr:'[ɪn]'},{w:' '},{w:'the',t:'этом',tr:'[ðə]'},{w:' '},{w:'tree',t:'дереве',tr:'[triː]'},{w:'. '},{w:'In',t:'в',tr:'[ɪn]'},{w:' '},{w:'spring',t:'весна',tr:'[sprɪŋ]'},{w:' '},{w:'it',t:'оно/дерево',tr:'[ɪt]'},{w:' '},{w:'has',t:'имеет',tr:'[hæz]'},{w:' '},{w:'beautiful',t:'красивые',tr:'[ˈbjuːtɪfl]'},{w:' '},{w:'flowers',t:'цветы',tr:'[ˈflaʊərz]'},{w:'. '},{w:'Children',t:'дети',tr:'[ˈtʃɪldrən]'},{w:' '},{w:'love',t:'любят',tr:'[lʌv]'},{w:' '},{w:'to',t:'инфинитив',tr:'[tuː]'},{w:' '},{w:'climb',t:'лазать',tr:'[klaɪm]'},{w:' '},{w:'it',t:'его/на него',tr:'[ɪt]'},{w:'!'}]},
+  {icon:'🌟',name:'My School Day',level:'Уровень 3 — Средний',title:'My School Day',
+   text:[{w:'Every',t:'каждый',tr:'[ˈevri]'},{w:' '},{w:'day',t:'день',tr:'[deɪ]'},{w:' '},{w:'I',t:'я',tr:'[aɪ]'},{w:' '},{w:'wake',t:'просыпаюсь',tr:'[weɪk]'},{w:' '},{w:'up',t:'частица (вставать)',tr:'[ʌp]'},{w:' '},{w:'at',t:'в (время)',tr:'[æt]'},{w:' '},{w:'seven',t:'семь',tr:'[ˈsevən]'},{w:' '},{w:"o'clock",t:'часов',tr:"[əˈklɒk]"},{w:'. '},{w:'I',t:'я',tr:'[aɪ]'},{w:' '},{w:'eat',t:'ем',tr:'[iːt]'},{w:' '},{w:'breakfast',t:'завтрак',tr:'[ˈbrekfəst]'},{w:' '},{w:'and',t:'и',tr:'[ænd]'},{w:' '},{w:'go',t:'иду',tr:'[ɡəʊ]'},{w:' '},{w:'to',t:'в',tr:'[tə]'},{w:' '},{w:'school',t:'школа',tr:'[skuːl]'},{w:'. '},{w:'My',t:'мой',tr:'[maɪ]'},{w:' '},{w:'favourite',t:'любимый',tr:'[ˈfeɪvərɪt]'},{w:' '},{w:'subject',t:'предмет',tr:'[ˈsʌbdʒɪkt]'},{w:' '},{w:'is',t:'это',tr:'[ɪz]'},{w:' '},{w:'English',t:'английский язык',tr:'[ˈɪŋɡlɪʃ]'},{w:'. '},{w:'After',t:'после',tr:'[ˈɑːftər]'},{w:' '},{w:'school',t:'школы',tr:'[skuːl]'},{w:' '},{w:'I',t:'я',tr:'[aɪ]'},{w:' '},{w:'play',t:'играю',tr:'[pleɪ]'},{w:' '},{w:'with',t:'с',tr:'[wɪð]'},{w:' '},{w:'my',t:'моими',tr:'[maɪ]'},{w:' '},{w:'friends',t:'друзьями',tr:'[frendz]'},{w:'. '},{w:'We',t:'мы',tr:'[wiː]'},{w:' '},{w:'have',t:'проводим',tr:'[hæv]'},{w:' '},{w:'a',t:'артикль a',tr:'[ə]'},{w:' '},{w:'great',t:'замечательное',tr:'[ɡreɪt]'},{w:' '},{w:'time',t:'время',tr:'[taɪm]'},{w:'!'}]},
+  {icon:'🏖',name:'Summer Holiday',level:'Уровень 4 — Выше среднего',title:'Summer Holiday',
+   text:[{w:'Last',t:'прошлым',tr:'[lɑːst]'},{w:' '},{w:'summer',t:'летом',tr:'[ˈsʌmər]'},{w:' '},{w:'our',t:'наша',tr:'[aʊər]'},{w:' '},{w:'family',t:'семья',tr:'[ˈfæməli]'},{w:' '},{w:'went',t:'поехала (прош.)',tr:'[went]'},{w:' '},{w:'to',t:'на',tr:'[tə]'},{w:' '},{w:'the',t:'артикль',tr:'[ðə]'},{w:' '},{w:'beach',t:'пляж',tr:'[biːtʃ]'},{w:'. '},{w:'We',t:'мы',tr:'[wiː]'},{w:' '},{w:'swam',t:'плавали (прош.)',tr:'[swæm]'},{w:' '},{w:'in',t:'в',tr:'[ɪn]'},{w:' '},{w:'the',t:'артикль',tr:'[ðə]'},{w:' '},{w:'sea',t:'море',tr:'[siː]'},{w:' '},{w:'and',t:'и',tr:'[ænd]'},{w:' '},{w:'built',t:'строили (прош.)',tr:'[bɪlt]'},{w:' '},{w:'sandcastles',t:'замки из песка',tr:'[ˈsændkɑːslz]'},{w:'. '},{w:'I',t:'я',tr:'[aɪ]'},{w:' '},{w:'ate',t:'ел (прош.)',tr:'[eɪt]'},{w:' '},{w:'ice cream',t:'мороженое',tr:'[ˈaɪs kriːm]'},{w:' '},{w:'every',t:'каждый',tr:'[ˈevri]'},{w:' '},{w:'day',t:'день',tr:'[deɪ]'},{w:'! '},{w:'It',t:'это',tr:'[ɪt]'},{w:' '},{w:'was',t:'было (прош.)',tr:'[wɒz]'},{w:' '},{w:'the',t:'артикль',tr:'[ðə]'},{w:' '},{w:'best',t:'лучший',tr:'[best]'},{w:' '},{w:'holiday',t:'каникулы',tr:'[ˈhɒlɪdeɪ]'},{w:' '},{w:'ever',t:'когда-либо',tr:'[ˈevər]'},{w:'!'}]},
+];
+
+const GRAMMAR=[
+  {icon:'🔵',title:'To Be (am / is / are)',subtitle:'Глагол "быть" — самый важный!',color:'#E3F2FD',accent:'#42A5F5',
+   rule:'Глагол <b>to be</b> = "быть / являться". В настоящем времени меняется по лицам.',
+   table:[['I','am','[æm] — Я являюсь'],['He / She / It','is','[ɪz] — Он/Она/Оно'],['We / You / They','are','[ɑː] — Мы/Вы/Они']],
+   examples:[{en:'I am a student.',ru:'Я — ученик.'},{en:'She is happy.',ru:'Она счастлива.'},{en:'They are friends.',ru:'Они — друзья.'},{en:'We are at school.',ru:'Мы в школе.'}]},
+  {icon:'📅',title:'Present Simple',subtitle:'Настоящее простое время',color:'#E8F5E9',accent:'#66BB6A',
+   rule:'<b>Present Simple</b> — регулярные действия. Для <b>he/she/it</b> добавляй <b>-s</b> или <b>-es</b>.',
+   table:[['I / You / We / They','play, eat, go','без изменений'],['He / She / It','plays, eats, goes','добавляем -s/-es']],
+   examples:[{en:'I play football.',ru:'Я играю в футбол.'},{en:'She reads every day.',ru:'Она читает каждый день.'},{en:'They go to school.',ru:'Они ходят в школу.'},{en:'He likes cats.',ru:'Он любит кошек.'}]},
+  {icon:'⏪',title:'Past Simple',subtitle:'Прошедшее время',color:'#FFF3E0',accent:'#FF9800',
+   rule:'<b>Past Simple</b> — прошлое. Правильные: добавь <b>-ed</b>. Неправильные — особая форма.',
+   table:[['Правильные','+ ed','play → played'],['Неправильные','особая форма','go → went, eat → ate']],
+   examples:[{en:'I played football yesterday.',ru:'Вчера я играл в футбол.'},{en:'She went to the park.',ru:'Она пошла в парк.'},{en:'We ate pizza.',ru:'Мы ели пиццу.'},{en:'He saw a big dog.',ru:'Он увидел большую собаку.'}]},
+  {icon:'⏩',title:'Future Simple (will)',subtitle:'Будущее время',color:'#F3E5F5',accent:'#AB47BC',
+   rule:'<b>Will + глагол</b> — будущее. Одинаково для всех! Отрицание: <b>won\'t</b>.',
+   table:[['Утверждение','will + глагол','I will go tomorrow.'],['Отрицание','won\'t + глагол','She won\'t eat that.'],['Вопрос','Will + подл. + гл.?','Will you help me?']],
+   examples:[{en:'I will go to school tomorrow.',ru:'Завтра я пойду в школу.'},{en:'She will eat an apple.',ru:'Она съест яблоко.'},{en:'Will you help me?',ru:'Ты поможешь мне?'},{en:"I won't watch TV.",ru:'Я не буду смотреть ТВ.'}]},
+  {icon:'🔢',title:'There is / There are',subtitle:'Как сказать "есть"',color:'#FCE4EC',accent:'#EC407A',
+   rule:'<b>There is</b> — один предмет. <b>There are</b> — несколько предметов.',
+   table:[['There is','+ ед.число','There is a cat.'],['There are','+ мн.число','There are 3 cats.']],
+   examples:[{en:'There is a book on the table.',ru:'На столе есть книга.'},{en:'There are five apples.',ru:'Есть пять яблок.'},{en:"There isn't any milk.",ru:'Нет молока.'},{en:'Are there any dogs?',ru:'Есть ли собаки?'}]},
+  {icon:'❓',title:'Вопросы: Do / Does / Did',subtitle:'Как задавать вопросы',color:'#EDE7F6',accent:'#AB47BC',
+   rule:'<b>Do</b> (I/you/we/they) и <b>Does</b> (he/she/it) — настоящее. <b>Did</b> — прошедшее для всех.',
+   table:[['Do','I / You / We / They','Do you like pizza?'],['Does','He / She / It','Does she play?'],['Did','все лица, прошедшее','Did you go there?']],
+   examples:[{en:'Do you like cats?',ru:'Ты любишь кошек?'},{en:'Does he play football?',ru:'Он играет в футбол?'},{en:'Did they go to school?',ru:'Они ходили в школу?'},{en:"I don't know.",ru:'Я не знаю.'}]},
+  {icon:'🎨',title:'Прилагательные',subtitle:'Описываем людей и вещи',color:'#E8F5E9',accent:'#4CAF50',
+   rule:'Прилагательные ставятся <b>перед существительным</b>. Сравнение: <b>-er</b>, превосходная: <b>-est</b>.',
+   table:[['Обычное','a big dog','большая собака'],['Сравнение','bigger than','больше, чем'],['Превосходное','the biggest','самый большой']],
+   examples:[{en:'She has a beautiful dress.',ru:'У неё красивое платье.'},{en:'My cat is bigger than yours.',ru:'Моя кошка больше твоей.'},{en:'This is the best cake!',ru:'Это лучший торт!'},{en:'He is taller than me.',ru:'Он выше меня.'}]},
+  {icon:'📍',title:'Предлоги места',subtitle:'Где находится предмет',color:'#E3F2FD',accent:'#26C6DA',
+   rule:'Предлоги показывают, <b>где находится</b> предмет. Самые важные:',
+   table:[['in','в','in the box'],['on','на','on the table'],['under','под','under the chair'],['next to','рядом с','next to me']],
+   examples:[{en:'The ball is under the table.',ru:'Мяч под столом.'},{en:'The pen is on the book.',ru:'Ручка на книге.'},{en:'I live in Kazakhstan.',ru:'Я живу в Казахстане.'},{en:"The school is next to the park.",ru:'Школа рядом с парком.'}]},
+];
+
+const QBANKS={
+  'Слова 🍎':[
+    {q:'Как переводится "dog"?',emoji:'🐶',hint:'Домашнее животное',opts:['собака','кошка','лошадь','рыба'],a:0},
+    {q:'Как переводится "water"?',emoji:'💧',hint:'Мы пьём это',opts:['еда','вода','небо','земля'],a:1},
+    {q:'Как переводится "happy"?',emoji:'😊',hint:'Это чувство',opts:['грустный','злой','счастливый','испуганный'],a:2},
+    {q:'Как переводится "beautiful"?',emoji:'🌸',hint:'Описание',opts:['страшный','красивый','умный','быстрый'],a:1},
+    {q:'Как по-английски "кошка"?',emoji:'🐱',hint:'Мяукает',opts:['dog','cat','bird','fish'],a:1},
+    {q:'Как по-английски "яблоко"?',emoji:'🍎',hint:'Фрукт',opts:['banana','orange','apple','carrot'],a:2},
+    {q:'Как по-английски "молоко"?',emoji:'🥛',hint:'Белый напиток',opts:['water','juice','milk','tea'],a:2},
+    {q:'Что значит "butterfly"?',emoji:'🦋',hint:'Красивое насекомое',opts:['пчела','бабочка','муха','жук'],a:1},
+    {q:'Как по-английски "друг"?',emoji:'👫',hint:'Best ...',opts:['family','friend','brother','teacher'],a:1},
+    {q:'Что значит "school"?',emoji:'🏫',hint:'Мы учимся там',opts:['дом','парк','школа','магазин'],a:2},
+    {q:'Как по-английски "читать"?',emoji:'📖',hint:'Глагол',opts:['write','run','read','play'],a:2},
+    {q:'Что значит "elephant"?',emoji:'🐘',hint:'Большое животное',opts:['лев','слон','жираф','медведь'],a:1},
+  ],
+  'Грамматика ✏️':[
+    {q:'I ___ a student.',emoji:'🎒',hint:'Глагол to be, I',opts:['is','are','am','be'],a:2},
+    {q:'She ___ every day. (читает)',emoji:'📖',hint:'Present Simple, she',opts:['read','reads','reading','readed'],a:1},
+    {q:'There ___ three dogs.',emoji:'🐕',hint:'Три = много',opts:['is','am','are','be'],a:2},
+    {q:'___ you like pizza?',emoji:'🍕',hint:'Вопрос настоящее',opts:['Does','Do','Is','Are'],a:1},
+    {q:'Yesterday I ___ to school.',emoji:'🏫',hint:'Past Simple, go',opts:['go','went','goed','going'],a:1},
+    {q:'She ___ happy yesterday.',emoji:'😊',hint:'Past Simple, to be',opts:['is','are','were','was'],a:3},
+    {q:'I ___ eat pizza tomorrow.',emoji:'🍕',hint:'Будущее время',opts:['do','did','will','am'],a:2},
+    {q:'The book is ___ the table.',emoji:'📚',hint:'НА столе',opts:['in','on','under','next'],a:1},
+    {q:'He ___ a big dog.',emoji:'🐶',hint:'have/has, he',opts:['have','has','had','having'],a:1},
+    {q:'They ___ friends.',emoji:'👫',hint:'To be, they',opts:['am','is','are','be'],a:2},
+    {q:'___ she go to school?',emoji:'🏫',hint:'Вопрос, she',opts:['Do','Does','Did','Is'],a:1},
+    {q:'I ___ eat meat. (не ем)',emoji:'🥩',hint:'Отрицание',opts:["don't","doesn't","didn't","won't"],a:0},
+  ],
+  'Цвета 🌈':[
+    {q:'What colour is the sun?',emoji:'☀️',hint:'Солнце',opts:['blue','red','yellow','green'],a:2},
+    {q:'What colour is the sky?',emoji:'🌤',hint:'Небо',opts:['blue','red','yellow','green'],a:0},
+    {q:'What colour is grass?',emoji:'🌿',hint:'Трава',opts:['orange','purple','green','white'],a:2},
+    {q:'Как по-английски "красный"?',emoji:'❤️',hint:'Цвет крови',opts:['blue','red','yellow','pink'],a:1},
+    {q:'Как по-английски "белый"?',emoji:'⬜',hint:'Цвет снега',opts:['black','white','grey','brown'],a:1},
+    {q:'What colour is a carrot?',emoji:'🥕',hint:'Морковь',opts:['red','blue','orange','purple'],a:2},
+    {q:'Что значит "purple"?',emoji:'🟣',hint:'Цвет',opts:['красный','синий','фиолетовый','зелёный'],a:2},
+    {q:'What colour is chocolate?',emoji:'🍫',hint:'Шоколад',opts:['white','pink','brown','grey'],a:2},
+  ],
+  'Числа 🔢':[
+    {q:'Как по-английски "пять"?',emoji:'5️⃣',hint:'5',opts:['four','five','six','seven'],a:1},
+    {q:'How many legs does a dog have?',emoji:'🐶',hint:'Считай лапы',opts:['two','three','four','five'],a:2},
+    {q:'Что значит "eight"?',emoji:'8️⃣',hint:'Число',opts:['шесть','семь','восемь','девять'],a:2},
+    {q:'Как по-английски "десять"?',emoji:'🔟',hint:'10',opts:['nine','ten','eleven','twelve'],a:1},
+    {q:'2 + 3 = ?',emoji:'➕',hint:'Two plus three',opts:['four','five','six','seven'],a:1},
+    {q:'Что значит "twenty"?',emoji:'🔢',hint:'Больше 15',opts:['двенадцать','пятнадцать','двадцать','тридцать'],a:2},
+  ],
+};
+
+const AI_TOPICS=[
+  {label:'📖 Новое слово',prompt:'Дай мне интересное английское слово для ребёнка 8-10 лет: напиши слово, транскрипцию в квадратных скобках, перевод на русский и 2 смешных предложения с этим словом.'},
+  {label:'✏️ Упражнение',prompt:'Придумай 3 коротких задания на английском для ребёнка 8-10 лет. После каждого напиши ответ. Задания должны быть разные: пропуск слова, перевод, вопрос.'},
+  {label:'📚 Грамматика',prompt:'Объясни мне одну новую грамматическую тему для ребёнка 8-10 лет (не to be, не present simple — выбери что-то другое). Объясни по-русски, дай таблицу и 3 примера с переводом.'},
+  {label:'🎮 Игра',prompt:'Давай сыграем в игру на английском! Придумай простую игру со словами или предложениями для ребёнка 8-10 лет и начни играть прямо сейчас.'},
+  {label:'🌍 Казахстан',prompt:'Расскажи 5 фраз на английском о Казахстане — с транскрипцией и переводом. Что казахстанский ребёнок может рассказать иностранцу о своей стране?'},
+  {label:'😂 Анекдот',prompt:'Расскажи смешной анекдот для ребёнка на английском языке. Сначала на английском, потом перевод на русский. Объясни непонятные слова с транскрипцией.'},
+  {label:'❓ Проверь меня',prompt:'Задай мне 5 вопросов на английском языке уровня для ребёнка 8-10 лет, а потом проверь ответы. Начни задавать вопросы по одному!'},
+  {label:'🗣 Диалог',prompt:'Давай попрактикуем диалог на английском! Придумай простую сценку (в магазине, в школе, на улице) и начни со своей реплики. Я отвечу по-английски, ты поправишь ошибки.'},
+];
+
+let stars=0,level=1,streak=0,correctCount=0;
+let currentQuiz=0,quizScore=0,quizAnswered=false,currentQBank='Слова 🍎';
+const aiHistory=[];
+
+function init(){
+  buildAlpha();buildPhonics();buildVocab();buildStories();buildGrammar();buildQTypeBtns();buildQuiz();buildAITopics();
+}
+
+function buildAlpha(){
+  const g=document.getElementById('alpha-grid');
+  ALPHA.forEach((it,i)=>{
+    const c=document.createElement('div');c.className='lcard';
+    c.style.borderColor=CLR[i%CLR.length]+'44';
+    c.innerHTML=`<div class="lc-em">${it.e}</div><div class="lc-big" style="color:${CLR[i%CLR.length]}">${it.l}</div><div class="lc-sm">${it.s}</div><div class="lc-wd">${it.w}</div><div class="lc-tr">${it.tr}</div><div class="lc-ru">${it.ru}</div>`;
+    c.onclick=()=>{speak(it.l+'... '+it.w);showToast(`${it.w} ${it.tr} — ${it.ru}`);addStar(1);burst(c);};
+    g.appendChild(c);
+  });
+}
+
+function buildPhonics(){
+  const g=document.getElementById('ph-grid');
+  PHONICS.forEach((it,i)=>{
+    const c=document.createElement('div');c.className='phcard';
+    c.innerHTML=`<div class="ph-em">${it.emoji}</div><div class="ph-lb" style="color:${CLR[i%CLR.length]}">${it.sound}</div><div class="ph-ipa">${it.ru}</div><div class="ph-ex">📝 ${it.ex}</div><div class="ph-ru">🇷🇺 ${it.exRu}</div>`;
+    c.onclick=()=>{speak(it.ex.split(',')[0].trim());showToast(`"${it.sound}" = ${it.ru}`);addStar(1);};
+    g.appendChild(c);
+  });
+}
+
+function buildVocab(){
+  const cats=Object.keys(VOCAB);
+  const bar=document.getElementById('vcats');
+  cats.forEach((cat,i)=>{
+    const b=document.createElement('button');b.className='cbt'+(i===0?' active':'');b.textContent=cat;
+    b.onclick=()=>{document.querySelectorAll('.cbt').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderVocab(cat);};
+    bar.appendChild(b);
+  });
+  renderVocab(cats[0]);
+}
+function renderVocab(cat){
+  const g=document.getElementById('vgrid');g.innerHTML='';
+  VOCAB[cat].forEach(it=>{
+    const c=document.createElement('div');c.className='vcard';
+    c.innerHTML=`<div class="vc-em">${it.e}</div><div class="vc-en">${it.en}</div><div class="vc-tr">${it.tr}</div><div class="vc-ru">${it.ru}</div>`;
+    c.onclick=()=>{speak(it.en);addStar(1);burst(c);};
+    g.appendChild(c);
+  });
+}
+
+function buildStories(){
+  const sel=document.getElementById('story-sel');
+  STORIES.forEach((s,i)=>{
+    const b=document.createElement('button');b.className='sbtn';
+    b.innerHTML=`<span class="si">${s.icon}</span><div><div class="sn">${s.name}</div><div class="sl">${s.level}</div></div>`;
+    b.onclick=()=>showStory(i);sel.appendChild(b);
+  });
+}
+function showStory(i){
+  const s=STORIES[i];
+  document.getElementById('story-list').style.display='none';
+  const box=document.getElementById('story-content');box.style.display='block';
+  let html=`<div class="story-box"><div class="story-ttl">${s.icon} ${s.title}</div><div>`;
+  s.text.forEach(tok=>{
+    if(!tok.t){html+=tok.w;}
+    else{html+=`<span class="sw" data-word="${tok.w}" data-trans="${tok.t}" data-tr="${tok.tr||''}" onclick="showTrans(this)">${tok.w}</span>`;}
+  });
+  html+=`</div></div><button class="back-btn" onclick="hideStory()">← Назад</button>`;
+  box.innerHTML=html;addStar(2);
+}
+function showTrans(el){
+  if(el.querySelector('.wtip')){el.querySelectorAll('.wtip,.wtr').forEach(x=>x.remove());return;}
+  if(el.dataset.tr){const t=document.createElement('span');t.className='wtr';t.textContent=el.dataset.tr;el.appendChild(t);}
+  const tip=document.createElement('span');tip.className='wtip';tip.textContent=el.dataset.trans;el.appendChild(tip);
+  speak(el.dataset.word);
+}
+function hideStory(){document.getElementById('story-list').style.display='block';document.getElementById('story-content').style.display='none';}
+
+function buildGrammar(){
+  const list=document.getElementById('gtopics');
+  const hc=['#FFF3E0','#E8F5E9','#FCE4EC','#E3F2FD','#FFF3E0','#EDE7F6','#E8F5E9','#E3F2FD'];
+  GRAMMAR.forEach((t,i)=>{
+    const b=document.createElement('button');b.className='gtbtn';
+    b.innerHTML=`<span class="gi">${t.icon}</span><div><div class="gt">${t.title}</div><div class="gs">${t.subtitle}</div></div>`;
+    b.onmouseover=()=>b.style.background=hc[i%hc.length];b.onmouseout=()=>b.style.background='';
+    b.onclick=()=>showGrammar(i);list.appendChild(b);
+  });
+}
+function showGrammar(i){
+  const t=GRAMMAR[i];
+  document.getElementById('grammar-list').style.display='none';
+  const box=document.getElementById('grammar-content');box.style.display='block';
+  let tbl=`<table style="width:100%;border-collapse:collapse;margin:8px 0;">`;
+  t.table.forEach(row=>{
+    tbl+=`<tr>`;
+    row.forEach((cell,ci)=>{const bg=ci===1?t.accent:'transparent';const col=ci===1?'#fff':'#333';tbl+=`<td style="padding:5px 8px;border-radius:6px;background:${bg};color:${col};font-weight:${ci===1?'800':'600'};font-size:12px;">${cell}</td>`;});
+    tbl+=`</tr>`;
+  });
+  tbl+=`</table>`;
+  let exH=`<div class="exgrid">`;
+  t.examples.forEach(ex=>{exH+=`<div class="exitem"><div class="en">${ex.en}</div><div class="ru">${ex.ru}</div></div>`;});
+  exH+=`</div>`;
+  box.innerHTML=`<div class="glesson"><h3>${t.icon} ${t.title}</h3><div class="rbox" style="border-color:${t.accent};background:${t.color}"><div class="rtitle">📌 Правило</div><div class="rtext">${t.rule}</div>${tbl}</div><div class="rtitle" style="margin-bottom:6px;">💬 Примеры</div>${exH}</div><button class="back-btn" style="margin-top:11px;" onclick="hideGrammar()">← Назад</button>`;
+  addStar(2);
+}
+function hideGrammar(){document.getElementById('grammar-list').style.display='block';document.getElementById('grammar-content').style.display='none';}
+
+function buildQTypeBtns(){
+  const bar=document.getElementById('qtypebar');
+  Object.keys(QBANKS).forEach((name,i)=>{
+    const b=document.createElement('button');b.className='qtbtn'+(i===0?' active':'');b.textContent=name;
+    b.onclick=()=>{document.querySelectorAll('.qtbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');currentQBank=name;buildQuiz();};
+    bar.appendChild(b);
+  });
+}
+function buildQuiz(){currentQuiz=0;quizScore=0;renderQ();}
+function renderQ(){
+  const box=document.getElementById('quiz-box');
+  const bank=QBANKS[currentQBank];
+  if(currentQuiz>=bank.length){
+    const pct=Math.round(quizScore/bank.length*100);
+    const em=pct>=80?'🏆':pct>=50?'🌟':'💪';
+    const msg=pct>=80?'Отлично! Ты настоящий герой!':pct>=50?'Хорошо! Продолжай!':'Не сдавайся!';
+    box.innerHTML=`<div class="qres"><div class="re">${em}</div><h3>${msg}</h3><p>Правильно: ${quizScore} из ${bank.length} (${pct}%)</p><button class="rbtn" onclick="buildQuiz()">🔄 Ещё раз</button></div>`;return;
+  }
+  const q=bank[currentQuiz];const prog=Math.round(currentQuiz/bank.length*100);quizAnswered=false;
+  const opts=q.opts.map((o,i)=>`<button class="qopt" onclick="answerQ(${i})">${o}</button>`).join('');
+  box.innerHTML=`<div class="qbox"><div class="qplab">Вопрос ${currentQuiz+1} из ${bank.length} — ${currentQBank}</div><div class="qpbar"><div class="qpfill" style="width:${prog}%"></div></div><div class="qem">${q.emoji}</div><div class="qq">${q.q}</div><div class="qhint">💡 ${q.hint}</div><div class="qopts">${opts}</div><div id="qfb"></div></div>`;
+}
+function answerQ(i){
+  if(quizAnswered)return;quizAnswered=true;
+  const q=QBANKS[currentQBank][currentQuiz];
+  document.querySelectorAll('.qopt')[q.a].classList.add('correct');
+  const fb=document.getElementById('qfb');
+  if(i===q.a){quizScore++;streak++;document.querySelectorAll('.qopt')[i].classList.add('correct');fb.className='qfb good';fb.textContent='✅ Правильно! Молодец!';addStar(3);burstScreen();}
+  else{streak=0;document.querySelectorAll('.qopt')[i].classList.add('wrong');fb.className='qfb bad';fb.textContent=`❌ Неверно. Ответ: "${q.opts[q.a]}"`;}
+  document.getElementById('streak').textContent=streak;
+  fb.innerHTML+=`<br><button class="qnext" onclick="currentQuiz++;renderQ()">→ Дальше</button>`;
+}
+
+function buildAITopics(){
+  const bar=document.getElementById('ai-topbar');
+  AI_TOPICS.forEach(t=>{
+    const b=document.createElement('button');b.className='aitbtn';b.textContent=t.label;
+    b.onclick=()=>sendAIMsg(t.prompt);bar.appendChild(b);
+  });
+}
+async function sendAI(){
+  const inp=document.getElementById('ai-inp');const msg=inp.value.trim();if(!msg)return;inp.value='';sendAIMsg(msg);
+}
+async function sendAIMsg(userMsg){
+  const msgs=document.getElementById('ai-msgs');const btn=document.getElementById('ai-sbtn');
+  const ub=document.createElement('div');ub.className='amsg user';ub.textContent=userMsg;msgs.appendChild(ub);msgs.scrollTop=msgs.scrollHeight;
+  const lb=document.createElement('div');lb.className='amsg loading';lb.innerHTML='🦉 Оливер думает <span id="ldots">...</span>';msgs.appendChild(lb);msgs.scrollTop=msgs.scrollHeight;btn.disabled=true;
+  let dots=0;const di=setInterval(()=>{const d=document.getElementById('ldots');if(d){dots=(dots+1)%4;d.textContent='.'.repeat(dots+1);}},400);
+  aiHistory.push({role:'user',content:userMsg});
+  const SYS=`Ты Оливер — дружелюбный учитель английского языка для детей 8-10 лет из Казахстана.
+Говоришь на русском, даёшь английские примеры с транскрипцией в квадратных скобках и переводом.
+Стиль: простой, весёлый, с эмодзи. Максимум 280 слов. Используй **жирный** для ключевых слов.
+Иногда делай отсылки к Казахстану, степям, снегу зимой — чтобы ребёнку было близко.`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:aiHistory.slice(-12)})});
+    const data=await resp.json();clearInterval(di);lb.remove();
+    const text=data.content?.[0]?.text||'Упс! Попробуй ещё раз.';
+    aiHistory.push({role:'assistant',content:text});
+    const ab=document.createElement('div');ab.className='amsg bot';ab.innerHTML='<span class="masc">🦉</span>'+fmtAI(text);msgs.appendChild(ab);msgs.scrollTop=msgs.scrollHeight;addStar(2);
+  }catch{clearInterval(di);lb.remove();const ab=document.createElement('div');ab.className='amsg bot';ab.innerHTML='🦉 Нет соединения. Проверь интернет!';msgs.appendChild(ab);msgs.scrollTop=msgs.scrollHeight;}
+  btn.disabled=false;
+}
+function fmtAI(t){return t.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\*(.*?)\*/g,'<i>$1</i>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');}
+
+function showSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('section-'+name).classList.add('active');
+  const map=['alphabet','phonics','vocab','reading','grammar','quiz','ai'];
+  document.querySelectorAll('.tab-btn')[map.indexOf(name)].classList.add('active');
+  if(name==='quiz')buildQuiz();
+}
+function addStar(n){
+  stars+=n;correctCount++;
+  document.getElementById('stars').textContent=stars;document.getElementById('correct').textContent=correctCount;
+  if(stars>=level*25){level++;document.getElementById('level').textContent=level;showToast('🎉 Уровень '+level+'! Ты отлично растёшь!');}
+}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+function speak(text){if('speechSynthesis'in window){const u=new SpeechSynthesisUtterance(text);u.lang='en-US';u.rate=0.82;u.pitch=1.1;window.speechSynthesis.cancel();window.speechSynthesis.speak(u);}}
+function burst(el){const r=el.getBoundingClientRect();const em=['⭐','🌟','✨','💫','🎉'];for(let i=0;i<3;i++){const s=document.createElement('div');s.className='starburst';s.textContent=em[Math.floor(Math.random()*em.length)];s.style.left=(r.left+r.width/2+(Math.random()-.5)*40)+'px';s.style.top=(r.top+r.height/2)+'px';document.body.appendChild(s);setTimeout(()=>s.remove(),900);}}
+function burstScreen(){const em=['⭐','🌟','✨','💫','🎊','🎉'];for(let i=0;i<8;i++){const s=document.createElement('div');s.className='starburst';s.textContent=em[Math.floor(Math.random()*em.length)];s.style.left=Math.random()*window.innerWidth+'px';s.style.top=(window.innerHeight*.3+Math.random()*window.innerHeight*.4)+'px';s.style.animationDelay=(i*.07)+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),1000);}}
+
+init();
+
+// PWA — регистрация Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.log('SW error:', err));
+  });
+}
+
+// PWA — кнопка установки
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.style.display = 'flex';
+});
+window.addEventListener('appinstalled', () => {
+  const banner = document.getElementById('install-banner');
+  if (banner) banner.style.display = 'none';
+  showToast('🎉 Приложение установлено!');
+});
+</script>
+<div id="install-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#FF7043,#FFD54F);padding:14px 16px;align-items:center;justify-content:space-between;gap:10px;z-index:2000;box-shadow:0 -4px 20px rgba(0,0,0,.2);">
+  <div style="color:white;font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;">📲 Установи как приложение!</div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="deferredPrompt&&deferredPrompt.prompt();this.parentElement.parentElement.style.display='none';" style="background:white;color:#FF7043;border:none;border-radius:50px;padding:8px 18px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;">Установить</button>
+    <button onclick="this.parentElement.parentElement.style.display='none'" style="background:rgba(255,255,255,.3);color:white;border:none;border-radius:50px;padding:8px 14px;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;cursor:pointer;">✕</button>
+  </div>
+</div>
+</body>
+</html>
